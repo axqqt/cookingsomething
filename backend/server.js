@@ -22,7 +22,7 @@ app.use("/register",registerRoute)
 app.use("/vids",vidsRoute)
 
 app.use("*", (req, res) => {
-  res.json({ Alert: "Where are u going bro?" });
+  res.json({ Alert: "Unknown Route!" });
 });
 
 

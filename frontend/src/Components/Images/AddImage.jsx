@@ -2,22 +2,18 @@
 import { useContext, useState } from "react";
 import Axios from "axios";
 import { theBag } from "../../App";
+import { AddImg } from "../Api/Api";
 
 const AddImage = () => {
   const { BASE, status, setStatus, loading, setLoading } = useContext(theBag);
 
   const [image, setImage] = useState(null);
 
-  async function AddImages(e) {
-    e.preventDefault();
+  async function AddImages() {
+
     try {
       setLoading(true);
-      const response = await Axios.post(`${BASE}/main/uploadimg`, { image });
-      if (response.status === 201) {
-        setStatus("Image Added!");
-      } else if (response.status === 404) {
-        setStatus("Error while adding image!");
-      }
+      await AddImg(image);
     } catch (err) {
       console.error(err);
     } finally {

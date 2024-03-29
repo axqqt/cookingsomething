@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { theBag } from "../../App";
 import "../../input.css";
 
-
 const Login = () => {
   const {
     status,
@@ -24,7 +23,6 @@ const Login = () => {
   const usernameField = useRef();
   const passwordField = useRef();
 
-  const endPoint = `${BASE}/login`;
   const navigate = useNavigate();
 
   const LogUser = async (e) => {
@@ -32,30 +30,18 @@ const Login = () => {
     if (!logged) {
       try {
         setLoading(true);
-        const response = await Axios.post(endPoint, data);
-        if (response.status === 200) {
-          const responseData = response.data;
-          const { AccessToken, RefreshToken } = responseData;
-          localStorage.setItem("accessToken", AccessToken);
-          localStorage.setItem("refreshToken", RefreshToken);
-          sessionStorage.setItem("user", data);
-          setLogged(true);
-          setUser(responseData);
-          navigate("/");
+        const logingRequest = Login(data);
+        if (logingRequest === 200) {
+          setStatus(`Welcome back ${data.username}!`);
+        } else if (logingRequest === 401) {
+          setStatus("Username is wrong!");
+        } else if (logingRequest === 403) {
+          setStatus("Wrong Password!");
         } else {
-          setStatus("Invalid Credentials!");
+          setStatus("Error!");
         }
       } catch (err) {
         console.log(err.message);
-        if (err.response && err.response.status === 403) {
-          setStatus("Username is wrong!");
-        } else if (err.response && err.response.status === 401) {
-          setStatus("Password is wrong!");
-        } else {
-          setStatus(
-            "An error occurred while logging in. Please try again later."
-          );
-        }
       } finally {
         setLoading(false);
       }
@@ -72,7 +58,10 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]" style={{textAlign:"center",margin:"60px"}}>
+    <div
+      className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]"
+      style={{ textAlign: "center", margin: "60px" }}
+    >
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
@@ -83,13 +72,14 @@ const Login = () => {
           </div>
           <form onSubmit={LogUser} className="grid gap-4">
             <div className="grid gap-2">
-              <h1 htmlFor="email">Email</h1>
+              <h1 htmlFor="email">Username</h1>
               <input
                 id="email"
-                type="email"
+                type="text"
                 placeholder="m@example.com"
                 onChange={handleChange}
                 name="username"
+                ref={usernameField}
                 required
               />
             </div>
@@ -103,17 +93,21 @@ const Login = () => {
                   Forgot your password?
                 </Link>
               </div>
-              <input id="password" type="password" onChange={handleChange} name="password" required />
+              <input
+                id="password"
+                type="password"
+                onChange={handleChange}
+                name="password"
+                required
+              />
             </div>
             <button type="submit" className="w-full">
               Login
             </button>
-            <button  className="w-full">
-              Login with Google
-            </button>
+            <button className="w-full">Login with Google</button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?
             <Link to="/newuser" className="underline">
               Sign up
             </Link>
