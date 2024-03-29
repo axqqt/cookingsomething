@@ -80,7 +80,7 @@ const Write = () => {
           className="write-input"
           name="theniche"
           type="text"
-          placeholder="Enter Niche!"
+          placeholder="Enter Niche!"  
           required
           onChange={handleChange}
         />
