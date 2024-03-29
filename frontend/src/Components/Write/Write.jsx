@@ -50,7 +50,6 @@ const Write = () => {
 
       if (response.status === 200) {
         setOutcome(response.data);
-
       }
     } catch (err) {
       if (err.response && err.status === 400) {
@@ -65,7 +64,6 @@ const Write = () => {
       setLoading(false);
     }
   }
-  
 
   return (
     <div className="write-container">
@@ -80,7 +78,7 @@ const Write = () => {
           className="write-input"
           name="theniche"
           type="text"
-          placeholder="Enter Niche!"  
+          placeholder="Enter Niche!"
           required
           onChange={handleChange}
         />
@@ -104,6 +102,7 @@ const Write = () => {
           Create!
         </button>
       </form>
+      <p>{images ? JSON.stringify(images) : null}</p>
       <form onSubmit={createThumbnail}>
         <input
           className="write-input"

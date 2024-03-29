@@ -33,6 +33,7 @@ const Login = () => {
         const logingRequest = Login(data);
         if (logingRequest === 200) {
           setStatus(`Welcome back ${data.username}!`);
+          setLogged(true);
         } else if (logingRequest === 401) {
           setStatus("Username is wrong!");
         } else if (logingRequest === 403) {
@@ -57,7 +58,7 @@ const Login = () => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  return (
+  return !logged ? (
     <div
       className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]"
       style={{ textAlign: "center", margin: "60px" }}
@@ -124,7 +125,7 @@ const Login = () => {
         />
       </div>
     </div>
-  );
+  ) : <h1>You are already logged in!</h1>;
 };
 
 export default Login;
