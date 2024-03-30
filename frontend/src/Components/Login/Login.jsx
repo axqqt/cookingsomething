@@ -61,7 +61,7 @@ const Login = () => {
   return !logged ? (
     <div
       className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]"
-      style={{ textAlign: "center", margin: "60px" }}
+      style={{ textAlign: "center", margin: "80px" }}
     >
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">

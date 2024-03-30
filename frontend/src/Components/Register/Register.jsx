@@ -71,7 +71,7 @@ const Register = () => {
   };
 
   return !logged ? (
-    <div style={{ justifyContent: "space-evenly",margin:"40px",padding:"40px",textAlign:"center" }}>
+    <div style={{ justifyContent: "space-evenly",margin:"80px",textAlign:"center" }}>
       <h1>Register Page</h1>
       <p>Use Credentials veloxal for username and velo123 as password!</p>
       <form onSubmit={LogUser}>

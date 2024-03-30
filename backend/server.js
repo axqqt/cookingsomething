@@ -8,6 +8,7 @@ const mainRoute = require('./routes/main')
 const loginRoute = require('./routes/login')
 const registerRoute = require("./routes/register");
 const vidsRoute = require("./routes/vids");
+const geminiRoute = require('./routes/gemini')
 
 app.use(express.json());
 app.use(cors());
@@ -19,7 +20,8 @@ app.get("/", (req, res) => {
 app.use("/main",mainRoute);
 app.use("/login",loginRoute)
 app.use("/register",registerRoute)
-app.use("/vids",vidsRoute)
+app.use("/vids",vidsRoute);
+app.use("/gemini",geminiRoute)
 
 app.use("*", (req, res) => {
   res.json({ Alert: "Unknown Route!" });

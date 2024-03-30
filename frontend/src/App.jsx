@@ -12,6 +12,7 @@ import Register from "./Components/Register/Register";
 import Vids from "./Components/Vids/Vids";
 import Pricing from "./Components/Pricing/Pricing";
 import Stories from "./Components/Stories/Stories";
+import Bot from "./Components/Bot/Bot";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const theBag = createContext();
@@ -21,7 +22,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({ username: "", password: "" });
   const [status, setStatus] = useState("");
-  const [logged, setLogged] = useState(false);
+  const [logged, setLogged] = useState(true);
 
   const theItems = {
     loading,
@@ -45,6 +46,7 @@ function App() {
             <Route path="/login" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/pricing" element={<Pricing />}></Route>
+            <Route path="/bot" element={<Bot />}></Route>
             <Route path="/write" element={<Write />}></Route>
             <Route path="/stories" element={<Stories />}></Route>
             <Route path="/vids" element={<Vids />}></Route>

@@ -2,6 +2,7 @@ import Axios from "axios";
 
 const BASE = "http://localhost:8000";
 
+
 export async function AddImg(image) {
   try {
     const response = await Axios.post(`${BASE}/main/uploadimg`, { image });
@@ -10,6 +11,25 @@ export async function AddImg(image) {
     console.error(err);
   }
 }
+
+export async function GeminiPrompt(prompt){
+  try{
+    const request = await Axios.post(`${BASE}/gemini`,{prompt})
+    return request.data;
+  }catch(err){
+    console.error(err);
+  }
+}
+
+export async function GeminiUpload(image){
+  try{
+    const request = await Axios.post(`${BASE}/gemini`,{image})
+    return request.data;
+  }catch(err){
+    console.error(err);
+  }
+}
+
 
 export const Login = async (data) => {
   try {
