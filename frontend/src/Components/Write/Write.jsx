@@ -4,6 +4,8 @@ import { theBag } from "../../App";
 import Axios from "axios";
 import "./Write.css";
 import { Link } from "react-router-dom";
+import { CreateThumbnail } from "../Api/Api";
+import CreateThumbnails from "./CreateThumbnail";
 
 const Write = () => {
   const { loading, setLoading, status, setStatus, BASE } = useContext(theBag);
@@ -22,6 +24,9 @@ const Write = () => {
 
   async function createThumbnail(e) {
     e.preventDefault();
+    if (status !== "") {
+      setStatus("");
+    }
     try {
       setLoading(true);
       const { data } = await Axios.post(`${BASE}/main/images`, prompt);
@@ -44,6 +49,9 @@ const Write = () => {
 
   async function CopyWrite(e) {
     e.preventDefault();
+    if (status !== "") {
+      setStatus("");
+    }
     try {
       setLoading(true);
       const response = await Axios.post(`${BASE}/main`, userData);
@@ -74,14 +82,21 @@ const Write = () => {
         Copy Write!
       </h1>
       <form onSubmit={CopyWrite} className="write-form">
-        <input
+        <select
           className="write-input"
           name="theniche"
-          type="text"
-          placeholder="Enter Niche!"
           required
           onChange={handleChange}
-        />
+        >
+          <option value="" disabled selected>
+            Select Niche
+          </option>
+          <option value="technology">Technology</option>
+          <option value="fashion">Fashion</option>
+          <option value="health">Health</option>
+          <option value="food">Food</option>
+          {/* Add more options as needed */}
+        </select>
         <input
           className="write-input"
           name="write"
@@ -103,20 +118,12 @@ const Write = () => {
         </button>
       </form>
       <p>{images ? JSON.stringify(images) : null}</p>
-      <form onSubmit={createThumbnail}>
-        <input
-          className="write-input"
-          onChange={(e) => {
-            setPrompt(e.target.value);
-          }}
-          type="text"
-          placeholder="Enter thumbnail style"
-        />
-        <button type="submit" disabled={loading}>
-          Create Thumbnail
-        </button>
-      </form>
-      <h1>{loading && "Loading..."}</h1>
+      <CreateThumbnails
+        images={images}
+        createThumbnail={createThumbnail}
+        setPrompt={setPrompt}
+        loading={loading}
+      />
       <Link to={"/"}>Go Home!</Link>
       <p className="write-outcome">{outcome.generatedText}</p>
       <h1 className="write-status">{status}</h1>

@@ -23,7 +23,7 @@ const Stories = () => {
   }
 
   return (
-    <div style={{ textAlign: "center", margin: "40px" }}>
+    <div style={{ textAlign: "center", margin: "60px" }}>
       <h1>Stories</h1>
       <form onSubmit={GenerateStories}>
         <input

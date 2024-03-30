@@ -4,7 +4,7 @@ const Axios = require("axios");
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const theImages = require("../models/imageVerify");
-const geminiKey = process.env.API_KEY;
+const geminiKey = process.env.GEMINI_KEY;
 const genAI = new GoogleGenerativeAI(geminiKey);
 const diffusiveKey = process.env.DIFFUSIONKEY;
 let theNiche;
@@ -49,39 +49,53 @@ Router.route("/").post(async (req, res) => {
 
 Router.route("/images").post(async (req, res) => {
   const { prompt } = req?.body;
-  if (!prompt) return res.status(403).json({ Alert: "Prompt required!" });
+
+  // Check if prompt is provided
+  if (!prompt) {
+    return res.status(403).json({ Alert: "Prompt required!" });
+  }
 
   try {
     const response = await Axios.post(
       `https://api.stability.ai/v2beta/stable-image/generate/core`,
       {
-        Headers: {
-          authorization: `Bearer ${diffusiveKey}`,
-        },
+        data: `Create a thumbnail about ${theWrite} in ${theNiche}, ${theProduct}. in ${prompt} style! `,
       },
       {
-        data: `Create a thumbnail about ${theWrite} in ${theNiche}, ${theProduct}. in ${prompt} style! `,
+        headers: {
+          authorization: `Bearer ${diffusiveKey}`,
+        },
       }
     );
 
-    if (response.status === 200) {
-      res.status(200).json(response.data);
-    } else if (response.status === 400) {
-      res.status(400).json({ Alert: "BAD Request!" });
-    } else if (response.status === 401) {
-      res.status(400).json({ Alert: "Buy an api key u bozo!" });
-    } else if (response.status === 403) {
-      res.status(403).json({ Alert: "Bad prompt!" });
-    } else if (response.status === 500) {
-      res.status(500).json({
-        Alert:
-          "An unexpected server error has occurred, please try again later.",
-      });
-    } else {
-      res.status(404).json({ Alert: "NO results found!" });
+    // Handling different response status codes
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response.data);
+        break;
+      case 400:
+        res.status(400).json({ Alert: "BAD Request!" });
+        break;
+      case 401:
+        res.status(400).json({ Alert: "Buy an API key!" });
+        break;
+      case 403:
+        res.status(403).json({ Alert: "Bad prompt!" });
+        break;
+      case 500:
+        res.status(500).json({
+          Alert: "An unexpected server error has occurred, please try again later.",
+        });
+        break;
+      default:
+        res.status(404).json({ Alert: "NO results found!" });
+        break;
     }
   } catch (err) {
     console.error(err);
+    res.status(500).json({
+      Alert: "An unexpected server error has occurred, please try again later.",
+    });
   }
 });
 
@@ -102,7 +116,7 @@ Router.route("/uploadimg").post(async (req, res) => {
 
 Router.route("/:id").put(async (req, res) => {
   const { id } = req?.params;
-  const { verify } = req.body;
+  const { verify } = req?.body;
   if (!id) return res.status(404).json({ Alert: "ID not found!" });
 
   try {

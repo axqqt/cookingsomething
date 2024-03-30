@@ -9,11 +9,14 @@ const ImageDetection = () => {
   const [image, setImage] = useState(null);
   const [botResponse, setBotResponse] = useState({});
 
+  const photoForm = new FormData();
+  photoForm.append("image",image)
+
   async function UploadImage(e) {
     e.preventDefault();
     try {
       setLoading(true);
-      const outcome = await GeminiUpload(image);
+      const outcome = await GeminiUpload(photoForm);
       if (outcome.status === 200) {
         setBotResponse(outcome);
       } else if (outcome.status === 404) {

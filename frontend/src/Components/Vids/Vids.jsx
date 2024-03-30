@@ -8,7 +8,11 @@ const Vids = () => {
 
   const { BASE, loading, setLoading, status, setStatus } = useContext(theBag);
 
-  async function createVideo() {
+  async function createVideo(e) {
+    e.preventDefault();
+    if(status!==""){
+      setStatus("")
+    }
     try {
       setLoading(true);
       const request = await Axios.post(`${BASE}/vids`, { theVideo: searchVid });
@@ -16,7 +20,10 @@ const Vids = () => {
         setStatus("request complete!");
       } else if (request.status === 404) {
         alert("No data found!");
+      } else if (request.status === 401) {
+        alert("Unauthorized");
       }
+      
     } catch (err) {
       console.error(err);
     } finally {
@@ -25,9 +32,9 @@ const Vids = () => {
   }
 
   return (
-    <div style={{textAlign:"center",margin:"40px"}}>
+    <div style={{textAlign:"center",margin:"60px"}}>
       <h1>Create Videos</h1>
-      <form onSubmit={createVideo}>
+      <form onSubmit={createVideo} style={{marginTop:"40px"}}>
         <input
           onChange={(e) => {
             setSearchVid(e.target.value);
@@ -38,6 +45,7 @@ const Vids = () => {
           Create Video!
         </button>
       </form>
+      <p>{status}</p>
     </div>
   );
 };

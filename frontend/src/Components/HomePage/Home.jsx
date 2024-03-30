@@ -5,9 +5,9 @@ import "./Home.css";
 export default function Home() {
   return (
     <div className="Home">
-      <header> 
+      <header>
         <nav>
-        <div className="logo">Veloxal</div>
+          <div className="logo">Veloxal</div>
           <ul>
             <li>
               <Link to={"/login"}>Login</Link>
@@ -22,7 +22,6 @@ export default function Home() {
               <Link to={"/stories"}>Create Ai Stories</Link>
             </li>
           </ul>
-
         </nav>
 
         <div className="hero">
@@ -39,28 +38,8 @@ export default function Home() {
           <div className="feature-grid">
             <Link to={"/vids"}>Generate Vids!</Link>
           </div>
-        </section>
-
-        <section className="testimonials">
-          <h2>What Our Customers Say</h2>
-          <div className="testimonial-grid">
-            {/* <TestimonialCard
-              quote="Quote from a satisfied customer about how your product helped them."
-              customer="Customer Name, Company"
-            /> */}
-            {/* Add more TestimonialCard components as needed */}
-          </div>
-        </section>
-
-        <section className="pricing">
-          <h2>Pricing Plans</h2>
-          <div className="pricing-grid">
-            {/* <PricingCard
-              plan="Basic"
-              price="$9/month"
-              features={['Feature 1', 'Feature 2']}
-            /> */}
-            {/* Add more PricingCard components as needed */}
+          <div className="feature-grid">
+            <Link to={"/bot"}>Bot</Link>
           </div>
         </section>
       </main>

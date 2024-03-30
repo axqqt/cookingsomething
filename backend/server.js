@@ -4,7 +4,7 @@ require("dotenv").config();
 const port = process.env.PORT;
 const db = require("./database/db");
 const cors = require("cors");
-const mainRoute = require('./routes/main')
+const mainRoute = require('./routes/images')
 const loginRoute = require('./routes/login')
 const registerRoute = require("./routes/register");
 const vidsRoute = require("./routes/vids");
@@ -18,8 +18,8 @@ app.get("/", (req, res) => {
   });
 
 app.use("/main",mainRoute);
-app.use("/login",loginRoute)
 app.use("/register",registerRoute)
+app.use("/login",loginRoute)
 app.use("/vids",vidsRoute);
 app.use("/gemini",geminiRoute)
 

@@ -15,13 +15,11 @@ const Bot = () => {
     try {
       setLoading(true);
       const outcome = await GeminiPrompt(prompt);
-
+      setBotResponse(outcome);
       if (outcome.status === 200) {
-        setBotResponse(outcome);
+        //
       } else if (outcome.status === 404) {
         setStatus("No results found!");
-      } else {
-        setStatus("Error while processing request!");
       }
     } catch (err) {
       console.error(err);
@@ -54,7 +52,7 @@ const Bot = () => {
         </form>
         <ImageDetection/>
         <p>{prompt}</p>
-        <p>{JSON.stringify(botResponse)}</p> {/**String for now! */}
+        <p>{botResponse.Output}</p> {/**String for now! */}
         <p>{status}</p>
       </div>
     ) : (
