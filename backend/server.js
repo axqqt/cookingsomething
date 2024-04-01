@@ -22,6 +22,7 @@ app.use("/register",registerRoute)
 app.use("/login",loginRoute)
 app.use("/vids",vidsRoute);
 app.use("/gemini",geminiRoute)
+app.use("/tiktoks",require("./routes/tiktok"))
 
 app.use("*", (req, res) => {
   res.json({ Alert: "Unknown Route!" });

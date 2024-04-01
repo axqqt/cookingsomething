@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 import { Link } from "react-router-dom";
 import { theBag } from "../../App";
-import "../../input.css";
+// import "../../input.css";
 
 const Login = () => {
   const {
