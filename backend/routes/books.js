@@ -8,6 +8,8 @@ const genAI = new GoogleGenerativeAI(geminiKey);
 const diffusiveKey = process.env.DIFFUSIONKEY;
 const endPoint = `https://open.api.sandbox.rpiprint.com/orders/create`;
 
+let theOutput;
+
 Router.route("/").post(async (req, res) => {
   try {
     const { pages, title } = req?.body;
@@ -28,6 +30,7 @@ Router.route("/").post(async (req, res) => {
 
     const text = response.text();
     if (text.length !== 0) {
+      theOutput = res.json({ text });
       return res.status(200).json({ generatedText: text });
     } else {
       return res.status(404).json({ alert: "No data retrieved" });
@@ -38,11 +41,11 @@ Router.route("/").post(async (req, res) => {
   }
 });
 
-Router.route("/create").post(async (req, res) => {
+Router.route("/create").post(async (req, res) => { //invalid key btw
   try {
     const request = await Axios.post(
       endPoint,
-      {  },
+      {theOutput},
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

@@ -41,6 +41,9 @@ export default function Home() {
           <div className="feature-grid">
             <Link to={"/bot"}>Bot</Link>
           </div>
+          <div className="feature-grid">
+            <Link to={"/books"}>Generate Books</Link>
+          </div>
         </section>
       </main>
 

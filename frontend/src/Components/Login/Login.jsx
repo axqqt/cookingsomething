@@ -98,6 +98,7 @@ const Login = () => {
                 id="password"
                 type="password"
                 onChange={handleChange}
+                ref={passwordField}
                 name="password"
                 required
               />
