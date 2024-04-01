@@ -18,6 +18,8 @@ const Write = () => {
   const [outcome, setOutcome] = useState({});
   const [images, setImages] = useState([]);
 
+  let searchedCounter = 0;
+
   const handleChange = (e) => {
     setData({ ...userData, [e.target.name]: e.target.value });
   };
@@ -58,6 +60,7 @@ const Write = () => {
 
       if (response.status === 200) {
         setOutcome(response.data);
+        searchedCounter++;
       }
     } catch (err) {
       if (err.response && err.status === 400) {
@@ -117,7 +120,9 @@ const Write = () => {
           Create!
         </button>
       </form>
-      <p>{images ? JSON.stringify(images) : null}</p>
+      <p className="write-outcome">{ outcome.generatedText }</p>
+      <br/>
+      {/* <p>{images ? JSON.stringify(images) : null}</p> */}
       <CreateThumbnails
         images={images}
         createThumbnail={createThumbnail}
@@ -125,7 +130,7 @@ const Write = () => {
         loading={loading}
       />
       <Link to={"/"}>Go Home!</Link>
-      <p className="write-outcome">{outcome.generatedText}</p>
+      <Link to={"/books"}>Create an Ebook!</Link>
       <h1 className="write-status">{status}</h1>
     </div>
   );

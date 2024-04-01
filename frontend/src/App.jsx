@@ -13,6 +13,7 @@ import Vids from "./Components/Vids/Vids";
 import Pricing from "./Components/Pricing/Pricing";
 import Stories from "./Components/Stories/Stories";
 import Bot from "./Components/Bot/Bot";
+import Ebooks from "./Components/EBooks/Ebooks";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const theBag = createContext();
@@ -43,6 +44,7 @@ function App() {
           {/* <Navigate /> */}
           <Routes>
             <Route path="/" element={<Home />}></Route>
+            <Route path="/books" element={<Ebooks/>}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/pricing" element={<Pricing />}></Route>

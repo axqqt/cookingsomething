@@ -18,6 +18,7 @@ app.get("/", (req, res) => {
   });
 
 app.use("/main",mainRoute);
+app.use("/books",require("./routes/books"))
 app.use("/register",registerRoute)
 app.use("/login",loginRoute)
 app.use("/vids",vidsRoute);
