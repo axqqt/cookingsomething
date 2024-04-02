@@ -18,11 +18,11 @@ function generatePDF(textArray, title) {
   doc.pipe(writeStream);
 
   for (const chapter of textArray) {
-    const lines = chapter.split('\n');
+    const lines = chapter.split("\n");
     const chapterTitle = lines[0].slice(2, -2);
     doc.moveDown(); // Add spacing
-    doc.fontSize(18).font('Helvetica-Bold').text(chapterTitle);
-    doc.font('Helvetica');
+    doc.fontSize(18).font("Helvetica-Bold").text(chapterTitle);
+    doc.font("Helvetica");
     const bulletPoints = lines.slice(1);
     for (const point of bulletPoints) {
       doc.text(point.slice(2));
@@ -44,8 +44,7 @@ Router.route("/").post(async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = `Write me a book outline on ${title} with 10 chapters. Chapters are counted with integers. Topics are bullet points under Chapter topics. Each chapter has 3 topics.Give me the output in JSON format where the topic is the key , and the value is an array of subtopics `;
-    theTitle = title;
+    const prompt = `Create a book outline in JSON format for a book titled "${title}". The outline should have 10 chapters, each containing 3 bulleted topic points. Dont include any \\n or \` characters in the JSON.`;
 
     const result = await model.generateContent(prompt);
     const response = result.response;
@@ -55,9 +54,11 @@ Router.route("/").post(async (req, res) => {
     }
 
     const text = response.text();
+
     if (text.length !== 0) {
-      theOutcome.push(text);
-      return res.status(200).json({ generatedText: text });
+      const jsonData = JSON.parse(text); // Parse the JSON string
+
+      return res.status(200).json({ jsonData });
     } else {
       return res.status(404).json({ alert: "No data retrieved" });
     }
