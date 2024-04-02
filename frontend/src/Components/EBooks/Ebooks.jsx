@@ -58,7 +58,7 @@ const Ebooks = () => {
       const request = await Axios.post(`${BASE}/books/gather`);
       if (request.status === 200) {
         setGeneratedBook(request.data);
-        setStatus("Generated!")
+        setStatus("Generated!");
       } else if (request.status === 404) {
         setStatus("No results found!");
       } else {
@@ -91,9 +91,9 @@ const Ebooks = () => {
           name="pages"
           type="number"
           value={data.pages}
-          placeholder="Enter Book!"
+          placeholder="Enter number of pages"
           required
-        ></input>
+        />
         <button type="submit" disabled={loading}>
           Generate!
         </button>

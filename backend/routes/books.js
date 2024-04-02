@@ -5,6 +5,23 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Axios = require("axios");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
+const base = `https://eu-central-1.hapio.net/v1/bookings`;
+
+let theTitle;
+let theOutcome = [];
+
+Router.route("/pdf").post(async (req, res) => {
+  try {
+    const request = await Axios.post(base, theOutcome); //key not given
+    if (result) {
+      res.status(200).json(request.data);
+    } else {
+      res.status(404).json({ Alert: "No data found!" });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 const geminiKey = process.env.GEMINI_KEY;
 const endPoint = `https://open.api.sandbox.rpiprint.com/orders/create`;
@@ -78,6 +95,10 @@ async function generateSubpoints(jsonData, title) {
 
       // Generate content for the subpoint prompt
       const result = await model.generateContent(subtopicPrompt);
+      /*we need to set -> safety_settings={
+        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    }*/
       const response = result.response;
 
       if (response && response.text) {
@@ -111,9 +132,6 @@ async function generateSubpoints(jsonData, title) {
   return generatedContent;
 }
 
-let theTitle;
-let theOutcome = [];
-
 Router.route("/").post(async (req, res) => {
   try {
     // Extract pages and title from the request body
@@ -132,6 +150,10 @@ Router.route("/").post(async (req, res) => {
 
     // Generate the book outline using the model and the prompt
     const result = await model.generateContent(prompt);
+    /*we need to set -> safety_settings={
+      HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+      HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+  }*/
     const response = result.response;
 
     // Check for errors or missing data in the outline generation response
@@ -181,9 +203,12 @@ Router.route("/generate-subpoints").post(async (req, res) => {
 
     for (const subpoint of subpoints) {
       const result = await model.generateContent(subpoint);
-      const response = result.response;
-      if (response && response.text) {
-        generatedContent.push(response.text());
+      /*we need to set -> safety_settings={
+        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+    }*/
+      if (result && result.response && result.response.text) {
+        generatedContent.push(result.response.text());
       }
     }
 
