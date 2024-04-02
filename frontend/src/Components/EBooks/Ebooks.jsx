@@ -12,31 +12,14 @@ const Ebooks = () => {
 
   async function GenerateBook(e) {
     e.preventDefault();
+    setStatus("");
     try {
       setLoading(true);
       const request = await Axios.post(`${BASE}/books`, data);
       if (request.status === 200) {
         setGeneratedBook(request.data);
         generatedBooks++;
-        CreateCover();
-      } else if (request.status === 404) {
-        setStatus("No results found!");
-      } else {
-        setStatus("Error!");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function CreateCover() {
-    try {
-      setLoading(true);
-      const request = await Axios.post(`${BASE}/books/cover`);
-      if (request.status === 200) {
-        setGeneratedBook(request.data);
+        // CreateCover();
         GatherData();
       } else if (request.status === 404) {
         setStatus("No results found!");
@@ -50,12 +33,32 @@ const Ebooks = () => {
     }
   }
 
+  // async function CreateCover() {
+  //   try {
+  //     setLoading(true);
+  //     const request = await Axios.post(`${BASE}/books/cover`);
+  //     if (request.status === 200) {
+  //       setGeneratedBook(request.data);
+  //       GatherData();
+  //     } else if (request.status === 404) {
+  //       setStatus("No results found!");
+  //     } else {
+  //       setStatus("Error!");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
+
   async function GatherData() {
     try {
       setLoading(true);
       const request = await Axios.post(`${BASE}/books/gather`);
       if (request.status === 200) {
         setGeneratedBook(request.data);
+        setStatus("Generated!")
       } else if (request.status === 404) {
         setStatus("No results found!");
       } else {
