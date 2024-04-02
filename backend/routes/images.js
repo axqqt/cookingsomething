@@ -26,7 +26,8 @@ Router.route("/").post(async (req, res) => {
     theProduct = productName;
 
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = `Write a copywriting script with good keywords for ${write} under ${theniche}, For ${productName}. make sure no symbols are sent , only the text`;
+    const prompt = `Write an ebook under "${write}" with good keywords for "${productName}" within the "${theniche}" niche. Ensure that only text is included, with no symbols. Provide the output in JSON format.`;
+
 
     const result = await model.generateContent(prompt);
     const response = result.response;
@@ -84,7 +85,8 @@ Router.route("/images").post(async (req, res) => {
         break;
       case 500:
         res.status(500).json({
-          Alert: "An unexpected server error has occurred, please try again later.",
+          Alert:
+            "An unexpected server error has occurred, please try again later.",
         });
         break;
       default:
