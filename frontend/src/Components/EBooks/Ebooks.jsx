@@ -31,8 +31,7 @@ const Ebooks = () => {
     }
   }
 
-  async function CreateCover(e) {
-    e.preventDefault();
+  async function CreateCover() {
     try {
       setLoading(true);
       const request = await Axios.post(`${BASE}/books/cover`);
@@ -51,8 +50,7 @@ const Ebooks = () => {
     }
   }
 
-  async function GatherData(e) {
-    e.preventDefault();
+  async function GatherData() {
     try {
       setLoading(true);
       const request = await Axios.post(`${BASE}/books/gather`);
