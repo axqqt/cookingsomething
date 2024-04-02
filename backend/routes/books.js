@@ -11,14 +11,13 @@ const endPoint = `https://open.api.sandbox.rpiprint.com/orders/create`;
 
 const genAI = new GoogleGenerativeAI(geminiKey);
 
-function generatePDF(chapters, generatedContent, title) {
+function generatePDF(textArray, title) {
   const doc = new PDFDocument();
   const writeStream = fs.createWriteStream(title + ".pdf");
 
   doc.pipe(writeStream);
 
-  for (let i = 0; i < chapters.length; i++) {
-    const chapter = chapters[i];
+  for (const chapter of textArray) {
     const lines = chapter.split('\n');
     const chapterTitle = lines[0].slice(2, -2);
     doc.moveDown(); // Add spacing
@@ -28,12 +27,6 @@ function generatePDF(chapters, generatedContent, title) {
     for (const point of bulletPoints) {
       doc.text(point.slice(2));
     }
-
-    // Add generated content under subpoints
-    if (generatedContent[i]) {
-      doc.moveDown(); // Add spacing
-      doc.fontSize(12).font('Helvetica-Oblique').text(generatedContent[i]);
-    }
   }
 
   doc.end();
@@ -41,7 +34,6 @@ function generatePDF(chapters, generatedContent, title) {
 
 let theTitle;
 let theOutcome = [];
-let subpointsContent = [];
 
 Router.route("/").post(async (req, res) => {
   try {
@@ -52,7 +44,7 @@ Router.route("/").post(async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = `Write me a book outline on ${title} with 10 chapters. Chapters are counted with integers. Topics are bullet points under Chapter topics. Each chapter has 3 topics`;
+    const prompt = `Write me a book outline on ${title} with 10 chapters. Chapters are counted with integers. Topics are bullet points under Chapter topics. Each chapter has 3 topics.Give me the output in JSON format where the topic is the key , and the value is an array of subtopics `;
     theTitle = title;
 
     const result = await model.generateContent(prompt);
@@ -94,9 +86,6 @@ Router.route("/generate-subpoints").post(async (req, res) => {
       }
     }
 
-    // Store the generated content for subpoints
-    subpointsContent = generatedContent;
-
     return res.status(200).json({ generatedContent });
   } catch (err) {
     console.error(err);
@@ -107,7 +96,7 @@ Router.route("/generate-subpoints").post(async (req, res) => {
 Router.route("/gather").post(async (req, res) => {
   try {
     if (theOutcome.length) {
-      generatePDF(theOutcome, subpointsContent, theTitle);
+      generatePDF(theOutcome, theTitle);
       res.status(200).json({ message: "PDF generated successfully" });
     } else {
       res.status(404).json({ Alert: "No results found!" });
