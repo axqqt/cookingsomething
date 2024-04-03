@@ -5,28 +5,41 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Axios = require("axios");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
+let returnData = {};
 
 const geminiKey = process.env.GEMINI_KEY;
 const endPoint = `https://open.api.sandbox.rpiprint.com/orders/create`;
 
 const genAI = new GoogleGenerativeAI(geminiKey);
 
-function generatePDF(textArray, title) {
-  const doc = new PDFDocument();
-  const writeStream = fs.createWriteStream(title + ".pdf");
-
+function generatePDF(data, title) {
+  const doc = new PDFDocument({ margin: 30, size: "A4" });
+  const writeStream = fs.createWriteStream(`${title}.pdf`);
   doc.pipe(writeStream);
 
-  for (const chapter of textArray) {
-    const lines = chapter.split("\n");
-    const chapterTitle = lines[0].slice(2, -2);
-    doc.moveDown(); // Add spacing
-    doc.fontSize(18).font("Helvetica-Bold").text(chapterTitle);
-    doc.font("Helvetica");
-    const bulletPoints = lines.slice(1);
-    for (const point of bulletPoints) {
-      doc.text(point.slice(2));
+  // Set font and styling
+  doc.font("Helvetica");
+  doc.fillColor("black");
+
+  // Add title
+  doc.fontSize(24).text(title, { align: "center" });
+  doc.moveDown();
+
+  // Iterate through data and add content
+  for (const [topic, content] of Object.entries(data)) {
+    doc.fontSize(18).text(topic, { underline: true });
+    doc.moveDown();
+
+    // Split content into lines and add each line to the PDF
+    const lines = content.split("\n");
+    for (const line of lines) {
+      if (line.trim() !== "") {
+        doc.fontSize(12).text(line.trim());
+        doc.moveDown();
+      }
     }
+
+    doc.moveDown();
   }
 
   doc.end();
@@ -68,7 +81,7 @@ async function generateSubpoints(jsonData, title) {
     const subtopicPrompt = `Create a subpoint for the topic "${subpoint}" where the subpoint is a detailed explanation of the topic. The subpoint should be at least 3 sentences long. Don't include any \\n or \` characters in the JSON. This is for a eBook titled "${title}".`;
 
     const currentTime = Date.now();
-    const delay = Math.max(0, 1000 - (currentTime - lastRequestTime)); // Calculate delay based on rate limit
+    const delay = Math.max(0, 400 - (currentTime - lastRequestTime)); // Calculate delay based on rate limit
 
     try {
       // Wait for the delay before next request using Promise
@@ -106,7 +119,6 @@ async function generateSubpoints(jsonData, title) {
       await generateSubpointWithDelay();
     }
   }
-
   // Return the generated content object after all subpoints are processed
   return generatedContent;
 }
@@ -148,10 +160,16 @@ Router.route("/").post(async (req, res) => {
         const jsonData = JSON.parse(text);
 
         // Call the generateSubpoints function to generate detailed explanations for each subpoint in the outline
-        const generatedContent = await generateSubpoints(jsonData, title);
+        await generateSubpoints(jsonData, title).then(
+          (content) => {
+            generatePDF(content, title);
+
+            returnData = content;
+          } // Generate PDF with the generated content
+        );
 
         // Return a successful response (status code 200) with the generated content
-        return res.status(200).json({ generatedContent });
+        return res.status(200).json({ returnData });
       } catch (error) {
         console.error("Error parsing JSON or generating subpoints:", error);
         // Return an error response (status code 500) if parsing or subpoint generation fails
