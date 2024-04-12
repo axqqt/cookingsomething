@@ -8,15 +8,18 @@ const mainRoute = require('./routes/images')
 const loginRoute = require('./routes/login')
 const registerRoute = require("./routes/register");
 const vidsRoute = require("./routes/vids");
-const geminiRoute = require('./routes/gemini')
+const geminiRoute = require('./routes/gemini');
+const errorHandler = require("./security/Errors")
 
 app.use(express.json());
 app.use(cors());
 
+app.use(errorHandler);
 app.get("/", (req, res) => {
     res.json({ Alert: "Hi Docker 🐋" });
   });
 
+  
 app.use("/main",mainRoute);
 app.use("/books",require("./routes/books"))
 app.use("/register",registerRoute)

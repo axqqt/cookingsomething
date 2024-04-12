@@ -5,6 +5,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+const { exec } = require("child_process");
 
 function generateDOCX(data, title) {
   const content = fs.readFileSync("template.docx", "binary");
@@ -13,10 +14,10 @@ function generateDOCX(data, title) {
 
   doc.setData({
     title: title,
-    topics: Object.keys(data).map(topic => ({
+    topics: Object.keys(data).map((topic) => ({
       name: topic,
-      content: data[topic]
-    }))
+      content: data[topic],
+    })),
   });
 
   doc.render();
@@ -28,8 +29,17 @@ async function generateSubpoints(jsonData, title) {
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
   const generatedContent = {};
 
-  for (let currentChapterIndex = 0; currentChapterIndex < jsonData.chapters.length; currentChapterIndex++) {
-    for (let currentSubpointIndex = 0; currentSubpointIndex < jsonData.chapters[currentChapterIndex].topics.length; currentSubpointIndex++) {
+  for (
+    let currentChapterIndex = 0;
+    currentChapterIndex < jsonData.chapters.length;
+    currentChapterIndex++
+  ) {
+    for (
+      let currentSubpointIndex = 0;
+      currentSubpointIndex <
+      jsonData.chapters[currentChapterIndex].topics.length;
+      currentSubpointIndex++
+    ) {
       const chapter = jsonData.chapters[currentChapterIndex];
       const subpoint = chapter.topics[currentSubpointIndex];
       const subtopicPrompt = `Create a subpoint for the topic "${subpoint}" where the subpoint is a detailed explanation of the topic. The subpoint should be at least 3 sentences long. Don't include any \\n or \` characters in the JSON. This is for a eBook titled "${title}".`;
@@ -72,7 +82,23 @@ Router.route("/").post(async (req, res) => {
         const content = await generateSubpoints(jsonData, title);
         generateDOCX(content, title);
         returnData = content;
-        return res.status(200).json({ returnData });
+
+        // Pass the title as a command-line argument to the Python script
+        exec(
+          `python ../scripts/canva.py "${title}"`,
+          (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error running Python script: ${error}`);
+              return res.status(500).json({ alert: "Internal server error" });
+            }
+
+            console.log(`Python script output: ${stdout}`);
+            console.error(`Python script error: ${stderr}`);
+
+            // Send the 200 status code response after running the Python script
+            return res.status(200).json({ returnData });
+          }
+        );
       } catch (error) {
         console.error("Error parsing JSON or generating subpoints:", error);
         return res.status(500).json({ alert: "Internal server error" });
