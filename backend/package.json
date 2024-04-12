@@ -5,6 +5,7 @@
     "bannerbear": "^1.4.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "docxtemplater": "^3.46.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "http-status-codes": "^2.3.0",
