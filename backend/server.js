@@ -14,7 +14,7 @@ const errorHandler = require("./security/Errors")
 app.use(express.json());
 app.use(cors());
 
-app.use(errorHandler);
+// app.use(errorHandler());
 app.get("/", (req, res) => {
     res.json({ Alert: "Hi Docker 🐋" });
   });
