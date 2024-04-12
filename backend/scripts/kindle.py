@@ -5,7 +5,8 @@ from selenium.webdriver.common.keys import Keys
 import time
 
 # Path to your ChromeDriver executable
-service = Service(executable_path="chromedriver.exe")
+service = Service(
+    executable_path="C:/Program Files/Google/Chrome/Application/chromedriver.exe")
 driver = webdriver.Chrome(service=service)
 
 # Asking for user input

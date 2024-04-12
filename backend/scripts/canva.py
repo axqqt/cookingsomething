@@ -14,7 +14,8 @@ if len(sys.argv) < 2:
 Template = sys.argv[1]
 
 # Initialize Chrome WebDriver
-service = Service(executable_path="chromedriver.exe")
+service = Service(
+    executable_path="C:/Program Files/Google/Chrome/Application/chromedriver.exe")
 driver = webdriver.Chrome(service=service)
 
 # Navigate to Canva website
@@ -22,13 +23,15 @@ driver.get("https://www.canva.com/")
 
 # Find and input the template search query
 search_input = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.CSS_SELECTOR, 'input[data-testid="search-input"]'))
+    EC.visibility_of_element_located(
+        (By.CSS_SELECTOR, 'input[data-testid="search-input"]'))
 )
 search_input.send_keys(Template)
 search_input.send_keys(Keys.RETURN)
 
 # Wait for search results to load
-WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '.design-element-thumb')))
+WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
+    (By.CSS_SELECTOR, '.design-element-thumb')))
 
 # Quit the driver
 driver.quit()

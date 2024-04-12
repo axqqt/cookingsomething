@@ -6,9 +6,14 @@ const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const { exec } = require("child_process");
+const path = require("path")
 
 function generateDOCX(data, title) {
-  const content = fs.readFileSync("template.docx", "binary");
+  // Get the absolute path to template.docx
+  const templatePath = path.join(__dirname, "template.docx");
+
+  // Read the content of template.docx
+  const content = fs.readFileSync(templatePath, "binary");
   const doc = new Docxtemplater();
   doc.loadZip(content);
 
@@ -22,6 +27,8 @@ function generateDOCX(data, title) {
 
   doc.render();
   const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+  // Write the generated .docx file
   fs.writeFileSync(`${title}.docx`, buf);
 }
 
