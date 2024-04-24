@@ -7,10 +7,17 @@ const fs = require("fs");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const { exec } = require("child_process");
 const path = require("path")
+const Docxtemplater = require('docxtemplater');
 
 function generateDOCX(data, title) {
-  // Get the absolute path to template.docx
   const templatePath = path.join(__dirname, "template.docx");
+
+  // Check if the template file exists
+  if (!fs.existsSync(templatePath)) {
+    // Create the template file if it doesn't exist
+    const defaultTemplateContent = ""; // You may provide default content if needed
+    fs.writeFileSync(templatePath, defaultTemplateContent);
+  }
 
   // Read the content of template.docx
   const content = fs.readFileSync(templatePath, "binary");
