@@ -6,20 +6,17 @@ const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const { exec } = require("child_process");
-const path = require("path")
-const Docxtemplater = require('docxtemplater');
+const path = require("path");
+const Docxtemplater = require("docxtemplater");
 
 function generateDOCX(data, title) {
   const templatePath = path.join(__dirname, "template.docx");
 
-  // Check if the template file exists
   if (!fs.existsSync(templatePath)) {
-    // Create the template file if it doesn't exist
-    const defaultTemplateContent = ""; // You may provide default content if needed
+    const defaultTemplateContent = "";
     fs.writeFileSync(templatePath, defaultTemplateContent);
   }
 
-  // Read the content of template.docx
   const content = fs.readFileSync(templatePath, "binary");
   const doc = new Docxtemplater();
   doc.loadZip(content);
@@ -35,42 +32,42 @@ function generateDOCX(data, title) {
   doc.render();
   const buf = doc.getZip().generate({ type: "nodebuffer" });
 
-  // Write the generated .docx file
   fs.writeFileSync(`${title}.docx`, buf);
 }
 
 async function generateSubpoints(jsonData, title) {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-  const generatedContent = {};
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const generatedContent = {};
 
-  for (
-    let currentChapterIndex = 0;
-    currentChapterIndex < jsonData.chapters.length;
-    currentChapterIndex++
-  ) {
-    for (
-      let currentSubpointIndex = 0;
-      currentSubpointIndex <
-      jsonData.chapters[currentChapterIndex].topics.length;
-      currentSubpointIndex++
-    ) {
-      const chapter = jsonData.chapters[currentChapterIndex];
-      const subpoint = chapter.topics[currentSubpointIndex];
-      const subtopicPrompt = `Create a subpoint for the topic "${subpoint}" where the subpoint is a detailed explanation of the topic. The subpoint should be at least 3 sentences long. Don't include any \\n or \` characters in the JSON. This is for a eBook titled "${title}".`;
+    for (let currentChapterIndex = 0; currentChapterIndex < jsonData.chapters.length; currentChapterIndex++) {
+      for (let currentSubpointIndex = 0; currentSubpointIndex < jsonData.chapters[currentChapterIndex].topics.length; currentSubpointIndex++) {
+        const chapter = jsonData.chapters[currentChapterIndex];
+        const subpoint = chapter.topics[currentSubpointIndex];
+        const subtopicPrompt = `Create a subpoint for the topic "${subpoint}" where the subpoint is a detailed explanation of the topic. The subpoint should be at least 3 sentences long. Don't include any \\n or \` characters in the JSON. This is for an eBook titled "${title}".`;
 
-      const result = await model.generateContent(subtopicPrompt);
-      const response = result.response;
-      if (response && response.text) {
-        generatedContent[subpoint] = response.text();
-        console.log(`Generated subpoint for "${subpoint}":\n`, response.text());
+        const result = await model.generateContent(subtopicPrompt);
+        const response = result.response;
+        if (response && response.text) {
+          const generatedText = response.text();
+          if (generatedText) {
+            generatedContent[subpoint] = generatedText;
+            console.log(`Generated subpoint for "${subpoint}":\n`, generatedText);
+          } else {
+            console.error(`Empty response for "${subpoint}"`);
+          }
+        } else {
+          console.error(`No response for "${subpoint}"`);
+        }
       }
     }
+    return generatedContent;
+  } catch (error) {
+    console.error("Error generating subpoints:", error);
+    throw error;
   }
-  return generatedContent;
 }
 
-let theTitle;
-let theOutcome = [];
 
 Router.route("/").post(async (req, res) => {
   try {
@@ -95,24 +92,20 @@ Router.route("/").post(async (req, res) => {
         const jsonData = JSON.parse(text);
         const content = await generateSubpoints(jsonData, title);
         generateDOCX(content, title);
-        returnData = content;
 
-        // Pass the title as a command-line argument to the Python script
-        exec(
-          `python ../scripts/canva.py "${title}"`,
-          (error, stdout, stderr) => {
-            if (error) {
-              console.error(`Error running Python script: ${error}`);
-              return res.status(500).json({ alert: "Internal server error" });
-            }
+        let returnData = content;
 
-            console.log(`Python script output: ${stdout}`);
-            console.error(`Python script error: ${stderr}`);
-
-            // Send the 200 status code response after running the Python script
-            return res.status(200).json({ returnData });
+        exec(`python ../scripts/canva.py "${title}"`, (error, stdout, stderr) => {
+          if (error) {
+            console.error(`Error running Python script: ${error}`);
+            return res.status(500).json({ alert: "Internal server error" });
           }
-        );
+
+          console.log(`Python script output: ${stdout}`);
+          console.error(`Python script error: ${stderr}`);
+
+          res.status(200).json({ returnData });
+        });
       } catch (error) {
         console.error("Error parsing JSON or generating subpoints:", error);
         return res.status(500).json({ alert: "Internal server error" });
@@ -129,6 +122,7 @@ Router.route("/").post(async (req, res) => {
 Router.route("/gather").post(async (req, res) => {
   try {
     if (theOutcome.length) {
+      // You need to define the generatePDF function
       generatePDF(theOutcome, theTitle);
       res.status(200).json({ message: "PDF generated successfully" });
     } else {
