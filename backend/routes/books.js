@@ -8,6 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY, { safety:HarmBlockT
 const { exec } = require("child_process");
 const path = require("path");
 const Docxtemplater = require("docxtemplater");
+const JSZip = require("jszip")
 
 // Function to generate DOCX file
 // Function to generate DOCX file
